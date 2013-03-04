@@ -1,0 +1,168 @@
+ZENOSS-PROCESS-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    enterprises, MODULE-IDENTITY, OBJECT-TYPE, Integer32
+        FROM SNMPv2-SMI
+
+    DisplayString, TruthValue
+        FROM SNMPv2-TC;
+
+zenossProcessMIB MODULE-IDENTITY
+    LAST-UPDATED    "201303040000Z"
+    ORGANIZATION    "Zenoss, Inc."
+    CONTACT-INFO    "support@zenoss.com"
+    DESCRIPTION
+        "This module defines system, process and metric information related to
+         a distributed Zenoss system."
+    REVISION        "201303040000Z"
+    DESCRIPTION
+        "First revision."
+    ::= { enterprises 14296 3 }
+
+
+--
+-- System Table
+--
+
+zenSystemTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ZenSystemEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "TODO"
+    ::= { zenossProcessMIB 1 }
+
+zenSystemEntry OBJECT-TYPE
+    SYNTAX      ZenSystemEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "TODO"
+    INDEX       { zenSystemIndex }
+    ::= { zenSystemTable 1 }
+
+ZenSystemEntry ::= SEQUENCE {
+    zenSystemIndex  Integer32,
+    zenSystemName   DisplayString
+}
+
+zenSystemIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "TODO"
+    ::= { zenSystemEntry 1 }
+
+zenSystemName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "TODO"
+    ::= { zenSystemEntry 2 }
+
+
+--
+-- Process Table
+--
+
+zenProcessTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ZenProcessEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "TODO"
+    ::= { zenossProcessMIB 2 }
+
+zenProcessEntry OBJECT-TYPE
+    SYNTAX      ZenProcessEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "TODO"
+    INDEX { zenSystemIndex, zenProcessIndex }
+    ::= { zenProcessTable 1 }
+
+ZenProcessEntry ::= SEQUENCE {
+    zenProcessIndex         Integer32,
+    zenProcessName          DisplayString
+}
+
+zenProcessIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "TODO"
+    ::= { zenProcessEntry 1 }
+
+zenProcessName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "TODO"
+    ::= { zenProcessEntry 2 }
+
+
+--
+-- Process Metric Table
+--
+
+zenProcessMetricTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ZenProcessMetricEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "TODO"
+    ::= { zenossProcessMIB 3 }
+
+zenProcessMetricEntry OBJECT-TYPE
+    SYNTAX      ZenProcessMetricEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "TODO"
+    INDEX       { zenSystemIndex, zenProcessIndex, zenProcessMetricIndex }
+    ::= { zenProcessMetricTable 1 }
+
+ZenProcessMetricEntry ::= SEQUENCE {
+    zenProcessMetricIndex   Integer32,
+    zenProcessMetricName    DisplayString
+}
+
+zenProcessMetricIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "TODO"
+    ::= { zenProcessMetricEntry 1 }
+
+zenProcessMetricName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "TODO"
+    ::= { zenProcessMetricEntry 2 }
+
+zenProcessMetricValue OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "TODO"
+    ::= { zenProcessMetricEntry 3 }
+
+zenProcessMetricFresh OBJECT-TYPE
+    SYNTAX      TruthValue
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "TODO"
+    ::= { zenProcessMetricEntry 4 }
+
+
+END
