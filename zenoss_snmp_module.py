@@ -94,7 +94,12 @@ def main():
 
     # Respond to OID requests.
     PP = snmp.PassPersist('.1.3.6.1.4.1.14296.3')
-    PP.start(update, 10)
+
+    try:
+        PP.start(update, 10)
+    except KeyboardInterrupt:
+        # It's OK. Let the user quit.
+        pass
 
 
 def unbuffer_stdout():

@@ -99,11 +99,26 @@ To install zenoss-snmp-module you must run the following commands::
 
     $ sudo easy_install zenoss-snmp-module
 
-Once installed, you must add the following line to your snmpd.conf file::
+If you get the following error, it means the snmp-passpersist dependency can't
+be found for your platform. To manually resolve this, run the following
+commands. Note that this requires that you install git::
 
-    pass_persist .1.3.6.1.4.1.14296.3 zenoss-snmp-module
+    git clone git://github.com/nagius/snmp_passpersist.git
+    cd snmp_passpersist
+    sudo python setup.py install
+    sudo easy_install zenoss-snmp-module
 
-After changing snmpd.conf you must restart the snmpd service.
+Once installed, you must add the following line to your snmpd.conf file. Note
+that easy_install might have installed zenoss-snmp-module in a different
+location on your system. Usually you can run ``which zenoss-snmp-module`` to
+find the proper path::
+
+    pass_persist .1.3.6.1.4.1.14296.3 /usr/bin/zenoss-snmp-module
+
+After changing snmpd.conf you must restart the snmpd service. Then you should
+be able to test with the following command::
+
+    snmpwalk -v2c -c public localhost .1.3.6.1.4.1.14296.3
 
 
 Troubleshooting
