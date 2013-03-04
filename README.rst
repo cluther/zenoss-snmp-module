@@ -95,10 +95,9 @@ See the following snmpwalk for how this looks in practice::
 Usage
 -----
 
-To install zenoss-snmp-module you must run the following commands. This assumes
-that you already have pip installed::
+To install zenoss-snmp-module you must run the following commands::
 
-    $ sudo pip install zenoss-snmp-module
+    $ sudo easy_install install zenoss-snmp-module
 
 Once installed, you must add the following line to your snmpd.conf file::
 
