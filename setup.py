@@ -19,7 +19,7 @@
 ##############################################################################
 
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 # Utility function to read the README file.
@@ -28,8 +28,10 @@ def read(fname):
 
 
 setup(
-    name='zenoss_snmp_module',
-    version='1.0.0dev1',
+    name='zenoss-snmp-module',
+    packages=['zenoss_snmp_module'],
+
+    version='1.0.0dev2',
     description="Net-SNMP pass_persist script for monitoring Zenoss.",
     long_description=read('README.rst'),
 
@@ -50,13 +52,12 @@ setup(
     author_email='chet.luther@gmail.com',
     url='http://github.com/cluther/zenoss-snmp-module',
     license='GPLv2',
-    py_modules=['zenoss_snmp_module'],
 
     install_requires=[
         'argparse',
         'python-rrdtool',
         'snmp-passpersist>=1.2.2',
-    ]
+    ],
 
     entry_points={
         'console_scripts': [

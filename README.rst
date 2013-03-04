@@ -97,7 +97,7 @@ Usage
 
 To install zenoss-snmp-module you must run the following commands::
 
-    $ sudo easy_install install zenoss-snmp-module
+    $ sudo easy_install zenoss-snmp-module
 
 Once installed, you must add the following line to your snmpd.conf file::
 
