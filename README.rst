@@ -100,8 +100,13 @@ To install zenoss-snmp-module you must run the following commands::
     $ sudo easy_install -U zenoss-snmp-module
 
 If you get the following error, it means the snmp-passpersist dependency can't
-be found for your platform. To manually resolve this, run the following
-commands. Note that this requires that you install git::
+be found for your platform::
+
+    No local packages or download links found for snmp-passpersist>=1.2.2
+    error: Could not find suitable distribution for Requirement.parse('snmp-passpersist>=1.2.2')
+
+To manually resolve this, run the following commands. Note that this requires
+that you install git::
 
     git clone git://github.com/nagius/snmp_passpersist.git
     cd snmp_passpersist
