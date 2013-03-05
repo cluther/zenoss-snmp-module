@@ -38,21 +38,12 @@ zenSystemEntry OBJECT-TYPE
     STATUS      current
     DESCRIPTION
         "TODO"
-    INDEX       { zenSystemIndex }
+    INDEX       { zenSystemName }
     ::= { zenSystemTable 1 }
 
 ZenSystemEntry ::= SEQUENCE {
-    zenSystemIndex  Integer32,
     zenSystemName   DisplayString
 }
-
-zenSystemIndex OBJECT-TYPE
-    SYNTAX      Integer32 (0..65535)
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION
-        "TODO"
-    ::= { zenSystemEntry 1 }
 
 zenSystemName OBJECT-TYPE
     SYNTAX      DisplayString
@@ -81,21 +72,13 @@ zenProcessEntry OBJECT-TYPE
     STATUS      current
     DESCRIPTION
         "TODO"
-    INDEX { zenSystemIndex, zenProcessIndex }
+    INDEX { zenSystemName, zenProcessName }
     ::= { zenProcessTable 1 }
 
 ZenProcessEntry ::= SEQUENCE {
-    zenProcessIndex         Integer32,
-    zenProcessName          DisplayString
+    zenProcessIndex OBJECT IDENTIFIER,
+    zenProcessName  DisplayString
 }
-
-zenProcessIndex OBJECT-TYPE
-    SYNTAX      Integer32 (0..65535)
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION
-        "TODO"
-    ::= { zenProcessEntry 1 }
 
 zenProcessName OBJECT-TYPE
     SYNTAX      DisplayString
@@ -103,7 +86,7 @@ zenProcessName OBJECT-TYPE
     STATUS      current
     DESCRIPTION
         "TODO"
-    ::= { zenProcessEntry 2 }
+    ::= { zenProcessEntry 1 }
 
 
 --
@@ -124,24 +107,25 @@ zenProcessMetricEntry OBJECT-TYPE
     STATUS      current
     DESCRIPTION
         "TODO"
-    INDEX       { zenSystemIndex, zenProcessIndex, zenProcessMetricIndex }
+    INDEX       { zenSystemName, zenProcessName, zenProcessMetricName }
     ::= { zenProcessMetricTable 1 }
 
 ZenProcessMetricEntry ::= SEQUENCE {
-    zenProcessMetricIndex   Integer32,
-    zenProcessMetricName    DisplayString
+    zenProcessMetricName    DisplayString,
+    zenProcessMetricFresh   TruthValue,
+    zenProcessMetricValue   DisplayString
 }
 
-zenProcessMetricIndex OBJECT-TYPE
-    SYNTAX      Integer32 (0..65535)
+zenProcessMetricName OBJECT-TYPE
+    SYNTAX      DisplayString
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION
         "TODO"
     ::= { zenProcessMetricEntry 1 }
 
-zenProcessMetricName OBJECT-TYPE
-    SYNTAX      DisplayString
+zenProcessMetricFresh OBJECT-TYPE
+    SYNTAX      TruthValue
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION
@@ -155,14 +139,6 @@ zenProcessMetricValue OBJECT-TYPE
     DESCRIPTION
         "TODO"
     ::= { zenProcessMetricEntry 3 }
-
-zenProcessMetricFresh OBJECT-TYPE
-    SYNTAX      TruthValue
-    MAX-ACCESS  read-only
-    STATUS      current
-    DESCRIPTION
-        "TODO"
-    ::= { zenProcessMetricEntry 4 }
 
 
 END

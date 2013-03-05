@@ -31,7 +31,7 @@ setup(
     name='zenoss-snmp-module',
     py_modules=['zenoss_snmp_module'],
 
-    version='1.0.0rc2',
+    version='1.0.0rc3',
     description="Net-SNMP pass_persist script for monitoring Zenoss.",
     long_description=read('README.rst'),
 

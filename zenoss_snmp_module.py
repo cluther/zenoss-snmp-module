@@ -150,26 +150,22 @@ def none_or_nan(value):
 def update():
     global PP
 
-    for system_id, system_name in enumerate(sorted(system_names()), 1):
-        PP.add_int('1.1.1.{0}'.format(system_id), system_id)
-        PP.add_str('1.1.2.{0}'.format(system_id), system_name)
+    for system_name in system_names():
+        system_index = PP.encode(system_name)
 
-        sorted_process_names = sorted(process_names(system_name))
-        for process_id, process_name in enumerate(sorted_process_names, 1):
-            process_index = '{0}.{1}'.format(system_id, process_id)
+        PP.add_str('1.1.2.{0}'.format(system_index), system_name)
 
-            PP.add_int('2.1.1.{0}'.format(process_index), process_id)
-            PP.add_str('2.1.2.{0}'.format(process_index), process_name)
+        for process_name in process_names(system_name):
+            process_index = '.'.join((
+                system_index, PP.encode(process_name)))
 
-            sorted_metric_names = sorted(
-                metric_names(system_name, process_name))
+            PP.add_str('2.1.1.{0}'.format(process_index), process_name)
 
-            for metric_id, metric_name in enumerate(sorted_metric_names, 1):
-                metric_index = '{0}.{1}.{2}'.format(
-                    system_id, process_id, metric_id)
+            for metric_name in metric_names(system_name, process_name):
+                metric_index = '.'.join((
+                    process_index, PP.encode(metric_name)))
 
-                PP.add_int('3.1.1.{0}'.format(metric_index), metric_id)
-                PP.add_str('3.1.2.{0}'.format(metric_index), metric_name)
+                PP.add_str('3.1.1.{0}'.format(metric_index), metric_name)
 
                 try:
                     rrd_info, ds_names, ds_values = rrdtool.fetch(
@@ -186,15 +182,15 @@ def update():
                         metric_value = ds_values[-2][0]
 
                     if not none_or_nan(metric_value):
+                        # zenProcessMetricFresh == True
+                        PP.add_int('3.1.2.{0}'.format(metric_index), 1)
+
                         PP.add_str(
                             '3.1.3.{0}'.format(metric_index),
                             metric_value)
-
-                        # zenProcessMetricFresh == True
-                        PP.add_int('3.1.4.{0}'.format(metric_index), 1)
                     else:
                         # zenProcessMetricFresh == False
-                        PP.add_int('3.1.4.{0}'.format(metric_index), 2)
+                        PP.add_int('3.1.2.{0}'.format(metric_index), 2)
 
                 except Exception:
                     pass

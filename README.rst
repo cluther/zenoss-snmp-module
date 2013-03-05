@@ -14,10 +14,8 @@ Currently zenoss-snmp-module provides support for the provided ZENOSS-PROCESS-MI
        +--zenSystemTable(1)
        |  |
        |  +--zenSystemEntry(1)
-       |     |  Index: zenSystemIndex
+       |     |  Index: zenSystemName
        |     |
-       |     +-- -R-- Integer32 zenSystemIndex(1)
-       |     |        Range: 0..65535
        |     +-- -R-- String    zenSystemName(2)
        |              Textual Convention: DisplayString
        |              Size: 0..255
@@ -25,71 +23,69 @@ Currently zenoss-snmp-module provides support for the provided ZENOSS-PROCESS-MI
        +--zenProcessTable(2)
        |  |
        |  +--zenProcessEntry(1)
-       |     |  Index: zenSystemIndex, zenProcessIndex
+       |     |  Index: zenSystemName, zenProcessName
        |     |
-       |     +-- -R-- Integer32 zenProcessIndex(1)
-       |     |        Range: 0..65535
-       |     +-- -R-- String    zenProcessName(2)
+       |     +-- -R-- String    zenProcessName(1)
        |              Textual Convention: DisplayString
        |              Size: 0..255
        |
        +--zenProcessMetricTable(3)
           |
           +--zenProcessMetricEntry(1)
-             |  Index: zenSystemIndex, zenProcessIndex, zenProcessMetricIndex
+             |  Index: zenSystemName, zenProcessName, zenProcessMetricName
              |
-             +-- -R-- Integer32 zenProcessMetricIndex(1)
-             |        Range: 0..65535
-             +-- -R-- String    zenProcessMetricName(2)
+             +-- -R-- String    zenProcessMetricName(1)
              |        Textual Convention: DisplayString
              |        Size: 0..255
+             +-- -R-- EnumVal   zenProcessMetricFresh(2)
+             |        Textual Convention: TruthValue
+             |        Values: true(1), false(2)
              +-- -R-- String    zenProcessMetricValue(3)
-             |        Textual Convention: DisplayString
-             |        Size: 0..255
-             +-- -R-- EnumVal   zenProcessMetricFresh(4)
-                      Textual Convention: TruthValue
-                      Values: true(1), false(2)
+                      Textual Convention: DisplayString
+                      Size: 0..255
 
 See the following snmpwalk for how this looks in practice::
 
     $ snmpwalk -v2c -c public localhost ZENOSS-PROCESS-MIB::zenossProcessMIB
-    ZENOSS-PROCESS-MIB::zenSystemIndex.1 = INTEGER: 1
-    ZENOSS-PROCESS-MIB::zenSystemName.1 = STRING: localhost
-    ZENOSS-PROCESS-MIB::zenProcessIndex.1.1 = INTEGER: 1
-    ZENOSS-PROCESS-MIB::zenProcessIndex.1.2 = INTEGER: 2
-    ZENOSS-PROCESS-MIB::zenProcessName.1.1 = STRING: zenperfsnmp
-    ZENOSS-PROCESS-MIB::zenProcessName.1.2 = STRING: zenwebtx
-    ZENOSS-PROCESS-MIB::zenProcessMetricIndex.1.1.1 = INTEGER: 1
-    ZENOSS-PROCESS-MIB::zenProcessMetricIndex.1.2.1 = INTEGER: 1
-    ZENOSS-PROCESS-MIB::zenProcessMetricIndex.1.2.2 = INTEGER: 2
-    ZENOSS-PROCESS-MIB::zenProcessMetricIndex.1.2.3 = INTEGER: 3
-    ZENOSS-PROCESS-MIB::zenProcessMetricIndex.1.2.4 = INTEGER: 4
-    ZENOSS-PROCESS-MIB::zenProcessMetricIndex.1.2.5 = INTEGER: 5
-    ZENOSS-PROCESS-MIB::zenProcessMetricIndex.1.2.6 = INTEGER: 6
-    ZENOSS-PROCESS-MIB::zenProcessMetricIndex.1.2.7 = INTEGER: 7
-    ZENOSS-PROCESS-MIB::zenProcessMetricName.1.1.1 = STRING: eventQueueLength
-    ZENOSS-PROCESS-MIB::zenProcessMetricName.1.2.1 = STRING: cyclePoints
-    ZENOSS-PROCESS-MIB::zenProcessMetricName.1.2.2 = STRING: dataPoints
-    ZENOSS-PROCESS-MIB::zenProcessMetricName.1.2.3 = STRING: devices
-    ZENOSS-PROCESS-MIB::zenProcessMetricName.1.2.4 = STRING: eventCount
-    ZENOSS-PROCESS-MIB::zenProcessMetricName.1.2.5 = STRING: eventQueueLength
-    ZENOSS-PROCESS-MIB::zenProcessMetricName.1.2.6 = STRING: queuedTasks
-    ZENOSS-PROCESS-MIB::zenProcessMetricName.1.2.7 = STRING: runningTasks
-    ZENOSS-PROCESS-MIB::zenProcessMetricValue.1.1.1 = STRING: 0.0
-    ZENOSS-PROCESS-MIB::zenProcessMetricValue.1.2.1 = STRING: 0.0
-    ZENOSS-PROCESS-MIB::zenProcessMetricValue.1.2.2 = STRING: 0.0
-    ZENOSS-PROCESS-MIB::zenProcessMetricValue.1.2.3 = STRING: 0.0
-    ZENOSS-PROCESS-MIB::zenProcessMetricValue.1.2.4 = STRING: 0.0
-    ZENOSS-PROCESS-MIB::zenProcessMetricValue.1.2.6 = STRING: 0.0
-    ZENOSS-PROCESS-MIB::zenProcessMetricValue.1.2.7 = STRING: 0.0
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh.1.1.1 = INTEGER: true(1)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh.1.2.1 = INTEGER: true(1)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh.1.2.2 = INTEGER: true(1)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh.1.2.3 = INTEGER: true(1)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh.1.2.4 = INTEGER: true(1)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh.1.2.5 = INTEGER: false(2)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh.1.2.6 = INTEGER: true(1)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh.1.2.7 = INTEGER: true(1)
+    ZENOSS-PROCESS-MIB::zenSystemName."localhost" = STRING: localhost
+    ZENOSS-PROCESS-MIB::zenProcessName."localhost"."zenhub" = STRING: zenhub
+    ZENOSS-PROCESS-MIB::zenProcessName."localhost"."zenwebtx" = STRING: zenwebtx
+    ZENOSS-PROCESS-MIB::zenProcessName."localhost"."zencommand" = STRING: zencommand
+    ZENOSS-PROCESS-MIB::zenProcessMetricName."localhost"."zenhub"."services" = STRING: services
+    ZENOSS-PROCESS-MIB::zenProcessMetricName."localhost"."zenhub"."totalTime" = STRING: totalTime
+    ZENOSS-PROCESS-MIB::zenProcessMetricName."localhost"."zenhub"."totalEvents" = STRING: totalEvents
+    ZENOSS-PROCESS-MIB::zenProcessMetricName."localhost"."zenhub"."invalidations" = STRING: invalidations
+    ZENOSS-PROCESS-MIB::zenProcessMetricName."localhost"."zenhub"."totalCallTime" = STRING: totalCallTime
+    ZENOSS-PROCESS-MIB::zenProcessMetricName."localhost"."zenhub"."workListLength" = STRING: workListLength
+    ZENOSS-PROCESS-MIB::zenProcessMetricName."localhost"."zenwebtx"."devices" = STRING: devices
+    ZENOSS-PROCESS-MIB::zenProcessMetricName."localhost"."zenwebtx"."dataPoints" = STRING: dataPoints
+    ZENOSS-PROCESS-MIB::zenProcessMetricName."localhost"."zenwebtx"."eventCount" = STRING: eventCount
+    ZENOSS-PROCESS-MIB::zenProcessMetricName."localhost"."zenwebtx"."cyclePoints" = STRING: cyclePoints
+    ZENOSS-PROCESS-MIB::zenProcessMetricName."localhost"."zenwebtx"."queuedTasks" = STRING: queuedTasks
+    ZENOSS-PROCESS-MIB::zenProcessMetricName."localhost"."zenwebtx"."runningTasks" = STRING: runningTasks
+    ZENOSS-PROCESS-MIB::zenProcessMetricName."localhost"."zenwebtx"."eventQueueLength" = STRING: eventQueueLength
+    ZENOSS-PROCESS-MIB::zenProcessMetricName."localhost"."zencommand"."eventQueueLength" = STRING: eventQueueLength
+    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenhub"."services" = INTEGER: false(2)
+    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenhub"."totalTime" = INTEGER: false(2)
+    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenhub"."totalEvents" = INTEGER: false(2)
+    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenhub"."invalidations" = INTEGER: false(2)
+    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenhub"."totalCallTime" = INTEGER: false(2)
+    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenhub"."workListLength" = INTEGER: false(2)
+    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenwebtx"."devices" = INTEGER: true(1)
+    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenwebtx"."dataPoints" = INTEGER: true(1)
+    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenwebtx"."eventCount" = INTEGER: true(1)
+    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenwebtx"."cyclePoints" = INTEGER: true(1)
+    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenwebtx"."queuedTasks" = INTEGER: true(1)
+    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenwebtx"."runningTasks" = INTEGER: true(1)
+    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenwebtx"."eventQueueLength" = INTEGER: true(1)
+    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zencommand"."eventQueueLength" = INTEGER: false(2)
+    ZENOSS-PROCESS-MIB::zenProcessMetricValue."localhost"."zenwebtx"."devices" = STRING: 0.0
+    ZENOSS-PROCESS-MIB::zenProcessMetricValue."localhost"."zenwebtx"."dataPoints" = STRING: 0.0
+    ZENOSS-PROCESS-MIB::zenProcessMetricValue."localhost"."zenwebtx"."eventCount" = STRING: 0.0
+    ZENOSS-PROCESS-MIB::zenProcessMetricValue."localhost"."zenwebtx"."cyclePoints" = STRING: 0.0
+    ZENOSS-PROCESS-MIB::zenProcessMetricValue."localhost"."zenwebtx"."queuedTasks" = STRING: 0.0
+    ZENOSS-PROCESS-MIB::zenProcessMetricValue."localhost"."zenwebtx"."runningTasks" = STRING: 0.0
+    ZENOSS-PROCESS-MIB::zenProcessMetricValue."localhost"."zenwebtx"."eventQueueLength" = STRING: 0.0
 
 
 Usage
@@ -129,7 +125,24 @@ associated MIB and configuring snmpd::
 After changing snmpd.conf you must restart the snmpd service. Then you should
 be able to test with the following command::
 
+    # Walk the entire zenossProcessMIB.
     snmpwalk -mALL -v2c -c public localhost zenossProcessMIB
+
+Try snmpwalk commands like the following to get more specific results::
+
+    # Only show metric values for the zenwebtx proces on the localhost collector.
+    snmpwalk -mALL -v2c -c public localhost 'zenProcessMetricValue."localhost"."zenwebtx"'
+
+    # Show stale metrics for the localhost collector.
+    snmpwalk -mALL -v2c -c public localhost 'zenProcessMetricFresh."localhost"' | grep false
+
+You will need to know the OIDs for these values to poll them with Zenoss. Use a
+command like the following to discover the OID for a given value. Note that
+because these OIDs are just encoded system, process and metric names, they will
+return the expected data from any system and can be considered permanent::
+
+    # Translate from name to OID.
+    snmptranslate -On 'ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenwebtx"."queuedTasks"'
 
 
 Troubleshooting
@@ -146,6 +159,14 @@ See the following session as an example::
     PING
     PONG
     DUMP
-    {'1.1.1.1': {'type': 'INTEGER', 'value': '1'},
-     '1.1.2.1': {'type': 'STRING', 'value': 'localhost'},
-     ... snipped ...
+    {'1.1.1.9.108.111.99.97.108.104.111.115.116': {'type': 'STRING',
+                                                   'value': 'localhost'},
+    ... snipped ...
+
+It can also be useful to stop the snmpd service and run it in the foreground
+with just the useful debugging enabled::
+
+    sudo service snmpd stop
+    sudo snmpd -fV -Lo -Ducd-snmp/pass_persist -Doutput
+
+Be sure to start the snmpd service once you're done testing.
