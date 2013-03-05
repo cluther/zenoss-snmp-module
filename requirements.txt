@@ -1,3 +1,4 @@
 argparse
+which
 snmp-passpersist>=1.2.2
 python-rrdtool

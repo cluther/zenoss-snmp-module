@@ -18,49 +18,6 @@
 #
 ##############################################################################
 
-'''
-+--zenossProcessMIB(3)
-   |
-   +--zenSystemTable(1)
-   |  |
-   |  +--zenSystemEntry(1)
-   |     |  Index: zenSystemIndex
-   |     |
-   |     +-- -R-- Integer32 zenSystemIndex(1)
-   |     |        Range: 0..65535
-   |     +-- -R-- String    zenSystemName(2)
-   |              Textual Convention: DisplayString
-   |              Size: 0..255
-   |
-   +--zenProcessTable(2)
-   |  |
-   |  +--zenProcessEntry(1)
-   |     |  Index: zenSystemIndex, zenProcessIndex
-   |     |
-   |     +-- -R-- Integer32 zenProcessIndex(1)
-   |     |        Range: 0..65535
-   |     +-- -R-- String    zenProcessName(2)
-   |              Textual Convention: DisplayString
-   |              Size: 0..255
-   |
-   +--zenProcessMetricTable(3)
-      |
-      +--zenProcessMetricEntry(1)
-         |  Index: zenSystemIndex, zenProcessIndex, zenProcessMetricIndex
-         |
-         +-- -R-- Integer32 zenProcessMetricIndex(1)
-         |        Range: 0..65535
-         +-- -R-- String    zenProcessMetricName(2)
-         |        Textual Convention: DisplayString
-         |        Size: 0..255
-         +-- -R-- String    zenProcessMetricValue(3)
-         |        Textual Convention: DisplayString
-         |        Size: 0..255
-         +-- -R-- EnumVal   zenProcessMetricFresh(4)
-                  Textual Convention: TruthValue
-                  Values: true(1), false(2)
-'''
-
 import math
 import os
 import sys
@@ -68,7 +25,10 @@ import sys
 import argparse
 import rrdtool
 import snmp_passpersist as snmp
+import which
 
+
+BASE_OID = '.1.3.6.1.4.1.14296.3'
 
 PP = None
 ZENHOME = None
@@ -78,28 +38,103 @@ def main():
     global PP
     global ZENHOME
 
-    parser = argparse.ArgumentParser()
+    default_zenhome = os.getenv('ZENHOME', '/opt/zenoss')
 
+    parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-z', '--zenhome',
-        help='ZENHOME directory',
-        default=os.getenv('ZENHOME', '/opt/zenoss'))
+        '--zenhome',
+        help='ZENHOME directory. Default is {0}'.format(default_zenhome),
+        default=default_zenhome)
+
+    help_group = parser.add_argument_group(
+        'Configuration Help',
+        'These arguments print configuration information then exit.')
+
+    # Nested mutually exclusive groups currently appear to be broken.
+    # Leaving this here so it'll work once it's fixed in Python.
+    mutex_help_group = help_group.add_mutually_exclusive_group()
+
+    mutex_help_group.add_argument(
+        '--readme', action='store_true',
+        help='Prints README.')
+
+    mutex_help_group.add_argument(
+        '--info', action='store_true',
+        help='Prints system, process and metric information.')
+
+    mutex_help_group.add_argument(
+        '--mib', action='store_true',
+        help='Prints ZENOSS-PROCESS-MIB.')
+
+    mutex_help_group.add_argument(
+        '--snmpd', action='store_true',
+        help='Prints snmpd.conf configuration excerpt.')
 
     args = parser.parse_args()
 
     ZENHOME = args.zenhome
 
+    if args.readme:
+        print_local_file('README.rst')
+        sys.exit(0)
+
+    if args.info:
+        print_information()
+        sys.exit(0)
+
+    if args.mib:
+        print_local_file('ZENOSS-PROCESS-MIB.txt')
+        sys.exit(0)
+
+    if args.snmpd:
+        print_snmpd()
+        sys.exit(0)
+
     # Required for snmp_passpersist to work.
     unbuffer_stdout()
 
     # Respond to OID requests.
-    PP = snmp.PassPersist('.1.3.6.1.4.1.14296.3')
+    PP = snmp.PassPersist(BASE_OID)
 
     try:
         PP.start(update, 10)
     except KeyboardInterrupt:
         # It's OK. Let the user quit.
         pass
+
+
+def print_local_file(filename):
+    path = os.path.join(os.path.dirname(__file__), filename)
+    with open(path, 'r') as f:
+        print f.read()
+
+
+def print_information():
+    for system_name in system_names():
+        print "System: {0}".format(system_name)
+
+        for process_name in process_names(system_name):
+            print "  Process: {0}".format(process_name)
+
+            for metric_name in metric_names(system_name, process_name):
+                print "    Metric: {0}".format(metric_name)
+
+            print
+
+        print
+
+
+def print_snmpd():
+    global ZENHOME
+
+    try:
+        script_path = which.which('zenoss-snmp-module')
+    except which.WhichError:
+        script_path = '/usr/bin/zenoss-snmp-module'
+
+    print "# Pass control of ZENOSS-PROCESS-MIB::zenossProcessMIB."
+    print "pass_persist {0} {1} --zenhome={2}".format(
+        BASE_OID, script_path, ZENHOME)
 
 
 def unbuffer_stdout():
@@ -211,13 +246,3 @@ def metric_names(system_name, process_name):
 
 if __name__ == '__main__':
     main()
-
-    # Testing
-    for system_name in system_names():
-        print "System: {0}".format(system_name)
-
-        for process_name in process_names(system_name):
-            print "  Process: {0}".format(process_name)
-
-            for metric_name in metric_names(system_name, process_name):
-                print "    Metric: {0}".format(metric_name)

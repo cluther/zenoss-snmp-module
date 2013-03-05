@@ -31,7 +31,7 @@ setup(
     name='zenoss-snmp-module',
     py_modules=['zenoss_snmp_module'],
 
-    version='1.0.0dev5',
+    version='1.0.0rc1',
     description="Net-SNMP pass_persist script for monitoring Zenoss.",
     long_description=read('README.rst'),
 
@@ -55,8 +55,13 @@ setup(
 
     install_requires=[
         'argparse',
+        'which',
         'python-rrdtool',
         'snmp-passpersist>=1.2.2',
+    ],
+
+    data_files=[
+        ('', ['README.rst', 'ZENOSS-PROCESS-MIB.txt']),
     ],
 
     entry_points={
