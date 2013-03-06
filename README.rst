@@ -91,22 +91,8 @@ See the following snmpwalk for how this looks in practice::
 Usage
 -----
 
-To install zenoss-snmp-module you must run the following commands::
+To install zenoss-snmp-module you must run the following command::
 
-    $ sudo easy_install -U zenoss-snmp-module
-
-If you get the following error, it means the snmp-passpersist dependency can't
-be found for your platform::
-
-    No local packages or download links found for snmp-passpersist>=1.2.2
-    error: Could not find suitable distribution for Requirement.parse('snmp-passpersist>=1.2.2')
-
-To manually resolve this, run the following commands. Note that this requires
-that you install git::
-
-    git clone git://github.com/nagius/snmp_passpersist.git
-    cd snmp_passpersist
-    sudo python setup.py install
     sudo easy_install -U zenoss-snmp-module
 
 Once installed, the ``zenoss-snmp-module`` script provides built-in support for
