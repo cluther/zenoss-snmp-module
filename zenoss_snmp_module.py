@@ -25,6 +25,7 @@ import sys
 import argparse
 import rrdtool
 import snmp_passpersist as snmp
+import time
 import which
 
 
@@ -147,53 +148,91 @@ def none_or_nan(value):
         return True
 
 
+class MIB:
+    '''
+    Class representation of ZENOSS-PROCESS-MIB.
+    '''
+    zenSystemTable = '1'
+    zenSystemEntry = '1.1'
+    zenSystemName = '1.1.1'
+    zenProcessTable = '2'
+    zenProcessEntry = '2.1'
+    zenProcessName = '2.1.1'
+    zenProcessMetricTable = '3'
+    zenProcessMetricEntry = '3.1'
+    zenProcessMetricName = '3.1.1'
+    zenProcessMetricValue = '3.1.2'
+    zenProcessMetricCyclesSinceUpdate = '3.1.3'
+
+
+def oid(identifier, string_indices):
+    return '{0}.{1}'.format(
+        identifier,
+        '.'.join(map(PP.encode, string_indices)))
+
+
 def update():
     global PP
 
+    update_zenSystemTable(PP)
+
+
+def update_zenSystemTable(PP):
     for system_name in system_names():
-        system_index = PP.encode(system_name)
+        indices = [system_name]
+        PP.add_str(
+            oid(MIB.zenSystemName, indices),
+            system_name)
 
-        PP.add_str('1.1.2.{0}'.format(system_index), system_name)
+        update_zenProcessTable(PP, system_name)
 
-        for process_name in process_names(system_name):
-            process_index = '.'.join((
-                system_index, PP.encode(process_name)))
 
-            PP.add_str('2.1.1.{0}'.format(process_index), process_name)
+def update_zenProcessTable(PP, system_name):
+    for process_name in process_names(system_name):
+        indices = [system_name, process_name]
+        PP.add_str(oid(MIB.zenProcessName, indices), process_name)
 
-            for metric_name in metric_names(system_name, process_name):
-                metric_index = '.'.join((
-                    process_index, PP.encode(metric_name)))
+        update_zenProcessMetricTable(PP, system_name, process_name)
 
-                PP.add_str('3.1.1.{0}'.format(metric_index), metric_name)
 
-                try:
-                    rrd_info, ds_names, ds_values = rrdtool.fetch(
-                        daemons_path(
-                            system_name,
-                            '{0}_{1}.rrd'.format(process_name, metric_name)),
-                        'AVERAGE')
+def update_zenProcessMetricTable(PP, system_name, process_name):
+    for metric_name in metric_names(system_name, process_name):
+        indices = [system_name, process_name, metric_name]
+        PP.add_str(oid(MIB.zenProcessMetricName, indices), metric_name)
 
-                    # Often the last sample is missing. Allow for it by
-                    # using the second-most-recent sample instead.
-                    if not none_or_nan(ds_values[-1][0]):
-                        metric_value = ds_values[-1][0]
-                    else:
-                        metric_value = ds_values[-2][0]
+        try:
+            rrd_filename = daemons_path(
+                system_name,
+                '{0}_{1}.rrd'.format(process_name, metric_name))
 
-                    if not none_or_nan(metric_value):
-                        # zenProcessMetricFresh == True
-                        PP.add_int('3.1.2.{0}'.format(metric_index), 1)
+            info, _, values = rrdtool.fetch(rrd_filename, 'AVERAGE')
 
-                        PP.add_str(
-                            '3.1.3.{0}'.format(metric_index),
-                            metric_value)
-                    else:
-                        # zenProcessMetricFresh == False
-                        PP.add_int('3.1.2.{0}'.format(metric_index), 2)
+            # Often the last sample is missing. Allow for it by using
+            # the second-most-recent sample instead.
+            if not none_or_nan(values[-1][0]):
+                metric_value = values[-1][0]
+            else:
+                metric_value = values[-2][0]
 
-                except Exception:
-                    pass
+            if not none_or_nan(metric_value):
+                PP.add_str(
+                    oid(MIB.zenProcessMetricValue, indices),
+                    metric_value)
+
+            # Figure out how many cycles (with decimal precision) it has
+            # been since the metric was last updated. This is a better
+            # measure than seconds since update because some metrics are
+            # stored more frequently than others.
+            step = info[2]
+            seconds_since_update = time.time() - rrdtool.last(rrd_filename)
+            cycles_since_update = seconds_since_update / step
+
+            PP.add_str(
+                oid(MIB.zenProcessMetricCyclesSinceUpdate, indices),
+                '{0:.2f}'.format(cycles_since_update))
+
+        except Exception:
+            pass
 
 
 def zen_path(*args):

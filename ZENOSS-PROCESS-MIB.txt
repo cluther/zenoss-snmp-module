@@ -1,10 +1,10 @@
 ZENOSS-PROCESS-MIB DEFINITIONS ::= BEGIN
 
 IMPORTS
-    enterprises, MODULE-IDENTITY, OBJECT-TYPE, Integer32
+    enterprises, MODULE-IDENTITY, OBJECT-TYPE
         FROM SNMPv2-SMI
 
-    DisplayString, TruthValue
+    DisplayString
         FROM SNMPv2-TC;
 
 zenossProcessMIB MODULE-IDENTITY
@@ -51,7 +51,7 @@ zenSystemName OBJECT-TYPE
     STATUS      current
     DESCRIPTION
         "TODO"
-    ::= { zenSystemEntry 2 }
+    ::= { zenSystemEntry 1 }
 
 
 --
@@ -76,7 +76,6 @@ zenProcessEntry OBJECT-TYPE
     ::= { zenProcessTable 1 }
 
 ZenProcessEntry ::= SEQUENCE {
-    zenProcessIndex OBJECT IDENTIFIER,
     zenProcessName  DisplayString
 }
 
@@ -111,9 +110,9 @@ zenProcessMetricEntry OBJECT-TYPE
     ::= { zenProcessMetricTable 1 }
 
 ZenProcessMetricEntry ::= SEQUENCE {
-    zenProcessMetricName    DisplayString,
-    zenProcessMetricFresh   TruthValue,
-    zenProcessMetricValue   DisplayString
+    zenProcessMetricName                DisplayString,
+    zenProcessMetricValue               DisplayString,
+    zenProcessMetricCyclesSinceUpdate   DisplayString
 }
 
 zenProcessMetricName OBJECT-TYPE
@@ -124,15 +123,15 @@ zenProcessMetricName OBJECT-TYPE
         "TODO"
     ::= { zenProcessMetricEntry 1 }
 
-zenProcessMetricFresh OBJECT-TYPE
-    SYNTAX      TruthValue
+zenProcessMetricValue OBJECT-TYPE
+    SYNTAX      DisplayString
     MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION
         "TODO"
     ::= { zenProcessMetricEntry 2 }
 
-zenProcessMetricValue OBJECT-TYPE
+zenProcessMetricCyclesSinceUpdate OBJECT-TYPE
     SYNTAX      DisplayString
     MAX-ACCESS  read-only
     STATUS      current

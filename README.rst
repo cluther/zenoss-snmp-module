@@ -6,7 +6,8 @@ you aren't familiar with Net-SNMP's pass_persist option, it allows an external
 script to provide responses for all GET and GETNEXT requires under a configured
 base OID.
 
-Currently zenoss-snmp-module provides support for the provided ZENOSS-PROCESS-MIB. See the following snmptranslate command for what the MIB provides::
+Currently zenoss-snmp-module provides support for the provided ZENOSS-PROCESS-
+MIB. See the following snmptranslate command for what the MIB provides::
 
     $ snmptranslate -Tp ZENOSS-PROCESS-MIB::zenossProcessMIB
     +--zenossProcessMIB(3)
@@ -16,7 +17,7 @@ Currently zenoss-snmp-module provides support for the provided ZENOSS-PROCESS-MI
        |  +--zenSystemEntry(1)
        |     |  Index: zenSystemName
        |     |
-       |     +-- -R-- String    zenSystemName(2)
+       |     +-- -R-- String    zenSystemName(1)
        |              Textual Convention: DisplayString
        |              Size: 0..255
        |
@@ -37,14 +38,12 @@ Currently zenoss-snmp-module provides support for the provided ZENOSS-PROCESS-MI
              +-- -R-- String    zenProcessMetricName(1)
              |        Textual Convention: DisplayString
              |        Size: 0..255
-             +-- -R-- EnumVal   zenProcessMetricFresh(2)
-             |        Textual Convention: TruthValue
-             |        Values: true(1), false(2)
-             +-- -R-- String    zenProcessMetricValue(3)
+             +-- -R-- String    zenProcessMetricValue(2)
+             |        Textual Convention: DisplayString
+             |        Size: 0..255
+             +-- -R-- String    zenProcessMetricCyclesSinceUpdate(3)
                       Textual Convention: DisplayString
                       Size: 0..255
-
-See the following snmpwalk for how this looks in practice::
 
     $ snmpwalk -v2c -c public localhost ZENOSS-PROCESS-MIB::zenossProcessMIB
     ZENOSS-PROCESS-MIB::zenSystemName."localhost" = STRING: localhost
@@ -65,20 +64,6 @@ See the following snmpwalk for how this looks in practice::
     ZENOSS-PROCESS-MIB::zenProcessMetricName."localhost"."zenwebtx"."runningTasks" = STRING: runningTasks
     ZENOSS-PROCESS-MIB::zenProcessMetricName."localhost"."zenwebtx"."eventQueueLength" = STRING: eventQueueLength
     ZENOSS-PROCESS-MIB::zenProcessMetricName."localhost"."zencommand"."eventQueueLength" = STRING: eventQueueLength
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenhub"."services" = INTEGER: false(2)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenhub"."totalTime" = INTEGER: false(2)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenhub"."totalEvents" = INTEGER: false(2)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenhub"."invalidations" = INTEGER: false(2)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenhub"."totalCallTime" = INTEGER: false(2)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenhub"."workListLength" = INTEGER: false(2)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenwebtx"."devices" = INTEGER: true(1)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenwebtx"."dataPoints" = INTEGER: true(1)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenwebtx"."eventCount" = INTEGER: true(1)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenwebtx"."cyclePoints" = INTEGER: true(1)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenwebtx"."queuedTasks" = INTEGER: true(1)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenwebtx"."runningTasks" = INTEGER: true(1)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenwebtx"."eventQueueLength" = INTEGER: true(1)
-    ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zencommand"."eventQueueLength" = INTEGER: false(2)
     ZENOSS-PROCESS-MIB::zenProcessMetricValue."localhost"."zenwebtx"."devices" = STRING: 0.0
     ZENOSS-PROCESS-MIB::zenProcessMetricValue."localhost"."zenwebtx"."dataPoints" = STRING: 0.0
     ZENOSS-PROCESS-MIB::zenProcessMetricValue."localhost"."zenwebtx"."eventCount" = STRING: 0.0
@@ -86,6 +71,20 @@ See the following snmpwalk for how this looks in practice::
     ZENOSS-PROCESS-MIB::zenProcessMetricValue."localhost"."zenwebtx"."queuedTasks" = STRING: 0.0
     ZENOSS-PROCESS-MIB::zenProcessMetricValue."localhost"."zenwebtx"."runningTasks" = STRING: 0.0
     ZENOSS-PROCESS-MIB::zenProcessMetricValue."localhost"."zenwebtx"."eventQueueLength" = STRING: 0.0
+    ZENOSS-PROCESS-MIB::zenProcessMetricCyclesSinceUpdate."localhost"."zenhub"."services" = STRING: 2.35
+    ZENOSS-PROCESS-MIB::zenProcessMetricCyclesSinceUpdate."localhost"."zenhub"."totalTime" = STRING: 2.35
+    ZENOSS-PROCESS-MIB::zenProcessMetricCyclesSinceUpdate."localhost"."zenhub"."totalEvents" = STRING: 2.35
+    ZENOSS-PROCESS-MIB::zenProcessMetricCyclesSinceUpdate."localhost"."zenhub"."invalidations" = STRING: 2.35
+    ZENOSS-PROCESS-MIB::zenProcessMetricCyclesSinceUpdate."localhost"."zenhub"."totalCallTime" = STRING: 2.35
+    ZENOSS-PROCESS-MIB::zenProcessMetricCyclesSinceUpdate."localhost"."zenhub"."workListLength" = STRING: 2.35
+    ZENOSS-PROCESS-MIB::zenProcessMetricCyclesSinceUpdate."localhost"."zenwebtx"."devices" = STRING: 0.48
+    ZENOSS-PROCESS-MIB::zenProcessMetricCyclesSinceUpdate."localhost"."zenwebtx"."dataPoints" = STRING: 0.48
+    ZENOSS-PROCESS-MIB::zenProcessMetricCyclesSinceUpdate."localhost"."zenwebtx"."eventCount" = STRING: 0.48
+    ZENOSS-PROCESS-MIB::zenProcessMetricCyclesSinceUpdate."localhost"."zenwebtx"."cyclePoints" = STRING: 0.48
+    ZENOSS-PROCESS-MIB::zenProcessMetricCyclesSinceUpdate."localhost"."zenwebtx"."queuedTasks" = STRING: 0.48
+    ZENOSS-PROCESS-MIB::zenProcessMetricCyclesSinceUpdate."localhost"."zenwebtx"."runningTasks" = STRING: 0.48
+    ZENOSS-PROCESS-MIB::zenProcessMetricCyclesSinceUpdate."localhost"."zenwebtx"."eventQueueLength" = STRING: 0.45
+    ZENOSS-PROCESS-MIB::zenProcessMetricCyclesSinceUpdate."localhost"."zencommand"."eventQueueLength" = STRING: 0.12
 
 
 Usage
@@ -119,8 +118,8 @@ Try snmpwalk commands like the following to get more specific results::
     # Only show metric values for the zenwebtx proces on the localhost collector.
     snmpwalk -mALL -v2c -c public localhost 'zenProcessMetricValue."localhost"."zenwebtx"'
 
-    # Show stale metrics for the localhost collector.
-    snmpwalk -mALL -v2c -c public localhost 'zenProcessMetricFresh."localhost"' | grep false
+    # Show how many cycles it's been since each metric was updated.
+    snmpwalk -mALL -v2c -c public localhost 'zenProcessMetricCyclesSinceUpdate."localhost"'
 
 You will need to know the OIDs for these values to poll them with Zenoss. Use a
 command like the following to discover the OID for a given value. Note that
@@ -128,7 +127,7 @@ because these OIDs are just encoded system, process and metric names, they will
 return the expected data from any system and can be considered permanent::
 
     # Translate from name to OID.
-    snmptranslate -On 'ZENOSS-PROCESS-MIB::zenProcessMetricFresh."localhost"."zenwebtx"."queuedTasks"'
+    snmptranslate -On 'ZENOSS-PROCESS-MIB::zenProcessMetricValue."localhost"."zenwebtx"."queuedTasks"'
 
 
 Troubleshooting
